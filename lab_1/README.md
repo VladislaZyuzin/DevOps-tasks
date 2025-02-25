@@ -68,3 +68,105 @@ sudo apt-get install nginx
 
 ![2](2.png)
 
+## Создание директроий для сайтов
+
+Мы не сможем настроить виртуальные хосты, если у нас не будет пет проектов, поэтому создаём 2 директории под 2 маленьких сайта.
+### Мои сайты
+1. Мною была создана первая директория под 1-й сайт:
+```
+sudo mkdir -p /var/www/cats/html
+```
+2. И вторая директория, соответсвенно, под 2-й сайт:
+```
+sudo mkdir -p /var/www/dogs/html
+```
+### Создаём файлики index.html для каждого сайта:
+Для котов вводим код, открывающий редактор nano:
+```
+sudo nano /var/www/cats/html/index.html
+```
+добавим код на html:
+```
+<html>
+    <head>
+        <title>Welcome to Cats World!</title>
+    </head>
+    <body>
+        <h1>Hello, Cats!</h1>
+    </body>
+</html>
+```
+Для собак введём код, открывающий редактор: 
+```
+sudo nano /var/www/dogs/html/index.html
+```
+код на html:
+```
+<html>
+    <head>
+        <title>Welcome to Dogs World!</title>
+    </head>
+    <body>
+        <h1>Hello, Dogs!</h1>
+    </body>
+</html>
+```
+## Настройка виртуальных хостов
+
+**Хост** - это штука, которая связывает несколько доменов на одном сервере. В нашем случае - это `cats.local` и `dogs.local`.
+Для того, чтобы наши домены слушались сначала порт 80 нам потребуется создать и расписать конфигурационные файлы (штуки, которые содержат настройки параметра системы).
+###  Создадим конфигурационные файлы
+* Для cats.local:
+```
+sudo nano /etc/nginx/sites-available/cats.conf
+```
+* Введём код:
+```
+server {
+    listen 80;
+    server_name cats.local;
+
+    root /var/www/cats/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+* Для dogs.local:
+```
+sudo nano /etc/nginx/sites-available/dogs.conf
+```
+* Вставим следующий код:
+```
+server {
+    listen 80;
+    server_name dogs.local;
+
+    root /var/www/dogs/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+### Активируем конфигурацию
+```
+sudo ln -s /etc/nginx/sites-available/cats.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/dogs.conf /etc/nginx/sites-enabled/
+```
+### Проверяем конфигурацию
+* Введём код для проверки: 
+```
+sudo nginx -t
+```
+Если всё будет нормально, то вы увидите ту же напись в терминале, что и у меня.
+
+![3](3.png)
+
+тогда нужно перезапустить nginx
+```
+sudo systemctl restart nginx
+```
