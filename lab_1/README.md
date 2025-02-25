@@ -210,9 +210,106 @@ HTTPS обеспечивает безопасное соединение меж�
 
 ### Устанавливаем OpenSSL 
 
-````
+```
 sudo apt-get install openssl
 ```
 
-### Создать SSL-сертификаты и ключи
+### Создаём SSL-сертификаты и ключи
+
+* Для `cats.local`
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/cats.key \
+  -out /etc/ssl/certs/cats.crt
+```
+В качестве результата будет красивая змейка и дальше терминал попросит указать данные для статитстики, их можно указать нарандоме, это не влияет на работу
+
+![7](7.png)
+
+* Для `dogs.local`
+```
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/dogs.key \
+  -out /etc/ssl/certs/dogs.crt
+```
+На картинке - пример запуска ssl сертификата
+
+![8](8.png)
+
+### Обновляем конфигурации для HTTPS:
+* Для `cats.local`:
+```
+sudo nano /etc/nginx/sites-available/cats.conf
+```
+Обновляем конфигурацию
+```
+server {
+    listen 80;
+    server_name cats.local;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name cats.local;
+
+    ssl_certificate /etc/ssl/certs/cats.crt;
+    ssl_certificate_key /etc/ssl/private/cats.key;
+
+    root /var/www/cats/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+* Для `dogs.local`
+```
+sudo nano /etc/nginx/sites-available/dogs.conf
+```
+Обновляем конфигурацию
+
+```
+server {
+    listen 80;
+    server_name dogs.local;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name dogs.local;
+
+    ssl_certificate /etc/ssl/certs/dogs.crt;
+    ssl_certificate_key /etc/ssl/private/dogs.key;
+
+    root /var/www/dogs/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+### Проверяем конфигурацию
+```
+sudo nginx -t
+```
+### Перезапускаем Nginx:
+```
+sudo systemctl restart nginx
+```
+### Проверяем работу
+
+Для этого введём в поисковую строку браузера
+
+* `http://cats.local` (должно перенаправить на `https://cats.local`).
+* `http://dogs.local` (должно перенаправить на `https://dogs.local`).
+
+Результат должен выглядеть следующим образом:
+
+![9](9.png)
+
+![10](10.png)
 
