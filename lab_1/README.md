@@ -313,3 +313,67 @@ sudo systemctl restart nginx
 
 ![10](10.png)
 
+## Настройка псевдонимов (alias)
+
+Псевдонимы (alias) позволяют сокращать пути к файлам. Например, вместо `/var/www/cats/html/images/cat.jpg` можно использовать `/images/cat.jpg`.
+
+Далее пойдёт ход работ по настройке и по тому что нужно сделать 
+### Создать дополнительные директории и файлы:
+* Для `cats.local`:
+```
+sudo mkdir -p /var/www/cats/html/images
+echo "<h1>Happy Cat!</h1>" | sudo tee /var/www/cats/html/images/happy.html
+```
+* Для `dogs.local`:
+```
+sudo mkdir -p /var/www/dogs/html/images
+echo "<h1>Happy Dog!</h1>" | sudo tee /var/www/dogs/html/images/happy.html
+```
+### Добавить псевдонимы в конфигурации
+* Для `cats.local`:
+```
+sudo nano /etc/nginx/sites-available/cats.conf
+```
+Добавить:
+```
+location /catimages {
+    alias /var/www/cats/html/images;
+}
+```
+Выглядеть конфиг после всех манипуляций будет следующим образом: 
+
+![11](11.png)
+
+* Для `dogs.local`:
+```
+sudo nano /etc/nginx/sites-available/dogs.conf
+```
+Добавляем: 
+```
+location /catimages {
+    alias /var/www/cats/html/images;
+}
+```
+
+Итоговый код в конфиге: 
+
+![12](12.png)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
