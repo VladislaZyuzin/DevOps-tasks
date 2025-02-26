@@ -323,12 +323,12 @@ sudo systemctl restart nginx
 * Для `cats.local`:
 ```
 sudo mkdir -p /var/www/cats/html/images
-echo "<h1>Happy Cat!</h1>" | sudo tee /var/www/cats/html/images/happy.html
+echo "<h1>Happy Cat/!</h1>" | sudo tee /var/www/cats/html/images/happy.html
 ```
 * Для `dogs.local`:
 ```
 sudo mkdir -p /var/www/dogs/html/images
-echo "<h1>Happy Dog!</h1>" | sudo tee /var/www/dogs/html/images/happy.html
+echo "<h1>Happy Dog/!</h1>" | sudo tee /var/www/dogs/html/images/happy.html
 ```
 ### Добавить псевдонимы в конфигурации
 * Для `cats.local`:
