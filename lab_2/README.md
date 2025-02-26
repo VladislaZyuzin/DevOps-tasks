@@ -69,13 +69,16 @@ cd bad-docker
 ```
 docker build -t bad-docker .
 ```
+![1](https://github.com/user-attachments/assets/b8a31f2c-8bbc-4f1e-96ae-92228926b62f)
+
 * Запустите контейнер:
 ```
 docker run bad-docker
 ```
 Вывод:
 
-![1](https://github.com/user-attachments/assets/b8a31f2c-8bbc-4f1e-96ae-92228926b62f)
+![Снимок экрана от 2025-02-26 20-28-25](https://github.com/user-attachments/assets/6ed92673-6a53-4dad-839b-d6c104919593)
+
 
 
 
