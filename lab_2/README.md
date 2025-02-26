@@ -59,11 +59,23 @@ RUN pip3 install -r /app/requirements.txt
 
 CMD ["python3", "/app/main.py"]
 ```
+### Запуск
 
+* Переходим в директорию `bad-docker`, если вы вернулись на начало
+```
+cd bad-docker
+```
+* Соберите образ:
+```
+docker build -t bad-docker .
+```
+* Запустите контейнер:
+```
+docker run bad-docker
+```
+Вывод:
 
-
-
-
+![1](https://github.com/user-attachments/assets/b8a31f2c-8bbc-4f1e-96ae-92228926b62f)
 
 
 
