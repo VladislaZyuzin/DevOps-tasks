@@ -122,22 +122,48 @@ __„-';;;;;\:''-,: : : :'~---~''/| NEVER GONNA RUN AROUND AND DESERT YOU
 """
 print(art)  
 ```
+* `requirements.txt` (пустой файл, так как приложение не использует внешние зависимости):
+```
+# Пустой файл
+```
+* `Dockerfile` (хороший Dockerfile):
+```
+FROM python:3.9-slim
 
+WORKDIR /app
 
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
 
+COPY . /app
 
+RUN useradd -m myuser && chown -R myuser:myuser /app
+USER myuser
 
-
-
-
-
-
-
-
-
+CMD ["python3", "main.py"]
+```
+### Запуск
+* Перейдите в директорию good-docker:
+```
+cd good-docker
+```
+* Соберите образ:
+```
+docker build -t good-docker .
+```
 ![Снимок экрана от 2025-02-26 21-01-11](https://github.com/user-attachments/assets/14e93df2-80ea-40e1-9e19-62b4bd173b43)
 
+Запустите контейнер:
+```
+docker run good-docker
+```
+Получайте приколюху
+
 ![Снимок экрана от 2025-02-26 21-02-14](https://github.com/user-attachments/assets/dfd41c67-1f40-4fcd-8019-a9b32dc9e606)
+
+
+
+
 
 
 
