@@ -1,5 +1,5 @@
 """
-Пакет calculator предоставляет функции для выполнения базовых математических операций.
+Пакет calculator даёт функции для выполнения базовых мат. операций.
 """
 
 from .calculator import add, subtract, multiply, divide
