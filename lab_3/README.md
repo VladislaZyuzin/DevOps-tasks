@@ -208,7 +208,8 @@ jobs:
 
 ### Результат работы: 
 
-![image](https://github.com/user-attachments/assets/71dfb5b3-f4cd-479d-a15b-5efe6cf52092)
+![image](https://github.com/user-attachments/assets/a58e340b-bd8d-4800-bbf9-38ba354c5dad)
+
 
 ## Хороший CI/CD
 По аналогии с плохим CI/CD мы разместим хороший в директории .github/workflows/good-ci.yml. Туда внесём скрипт:
