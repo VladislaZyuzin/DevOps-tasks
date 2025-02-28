@@ -214,6 +214,171 @@ jobs:
 
 ![image](https://github.com/user-attachments/assets/71dfb5b3-f4cd-479d-a15b-5efe6cf52092)
 
+## Хороший CI/CD
+По аналогии с плохим CI/CD мы разместим хороший в директории .github/workflows/good-ci.yml. Туда внесём скрипт:
+```
+name: Good CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: python -m unittest discover tests
+
+    - name: Run linter
+      run: flake8 calculator
+
+    - name: Notify on success
+      if: success()
+      run: echo "All tests and linting passed!"
+```
+### Расскажу что делает этот CICD:
+
+1.  **Название `workflow`:**
+
+    ```yaml
+    name: Good CI
+    ```
+
+    *   Это название вашего workflow. Оно отображается в интерфейсе GitHub Actions.
+
+2.  **Триггеры для запуска:**
+
+    ```yaml
+    on:
+      push:
+        branches:
+          - main
+      pull_request:
+        branches:
+          - main
+    ```
+
+    Workflow будет запускаться:
+
+    *   При каждом пуше (изменении кода) в ветку `main`.
+    *   При создании или обновлении пул-реквеста (запроса на слияние изменений) в ветку `main`.
+
+3.  **Определение `jobs`:**
+
+    ```yaml
+    jobs:
+      build:
+    ```
+
+    *   В этом разделе определяются задачи (jobs), которые будут выполняться в рамках workflow.
+
+4.  **Название job:**
+
+    *   `build`
+
+    *   Это название задачи (job).
+
+5.  **ОС для выполнения `job`:**
+
+    ```yaml
+    runs-on: ubuntu-latest
+    ```
+
+    *   Указывает, на какой операционной системе будет выполняться job. В данном случае используется последняя версия `Ubuntu`.
+
+6.  **Шаги выполнения job:**
+
+    ```yaml
+    steps:
+    ```
+
+    *   В этом разделе определяются шаги, которые будут выполняться в рамках job.
+
+7.  **Клонирование репозитория:**
+
+    ```yaml
+    - uses: actions/checkout@v2
+    ```
+
+    *   Этот шаг клонирует ваш репозиторий на виртуальную машину, где выполняется job. Без этого шага у вас не будет доступа к вашему коду.
+
+8.  **Установка Python:**
+
+    ```yaml
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    ```
+
+    *   `name`: Название шага (отображается в логах GitHub Actions).
+    *   `uses`: Использует действие `actions/setup-python@v2` для установки Python.
+    *   `with`: Параметры для действия. В данном случае указывается версия Python (3.8).
+
+9.  **Установка зависимостей:**
+
+    ```yaml
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    ```
+
+    *   `name`: Название шага.
+    *   `run`: Выполняет команды в shell. В данном случае:
+
+        *   Обновляет pip до последней версии.
+        *   Устанавливает зависимости из файла `requirements.txt`.
+
+10. **Запуск тестов:**
+
+    ```yaml
+    - name: Run tests
+      run: python -m unittest discover tests
+    ```
+
+    *   `name`: Название шага.
+    *   `run`: Запускает тесты с помощью модуля `unittest`. Команда `discover tests` автоматически находит и запускает все тесты в папке `tests`.
+
+11. **Запуск линтера:**
+
+    ```yaml
+    - name: Run linter
+      run: flake8 calculator
+    ```
+
+    *   `name`: Название шага.
+    *   `run`: Запускает `flake8` для проверки стиля кода в папке `calculator`.
+
+12. **Уведомление об успешном завершении:**
+
+    ```yaml
+    - name: Notify on success
+      if: success()
+      run: echo "All tests and linting passed!"
+    ```
+
+    *   `name`: Название шага.
+    *   `if`: Условие для выполнения шага. `success()` означает, что шаг выполнится только в случае успешного завершения предыдущих шагов.
+    *   `run`: Выполняет команду в shell. В данном случае выводит сообщение "All tests and linting passed!" в лог. Это полезно для получения обратной связи об успешном прохождении CI.
 
 
 
