@@ -210,3 +210,12 @@ jobs:
 * run: Запускает flake8 для проверки стиля кода в папке calculator.
 
 ### Результат работы: 
+
+![image](https://github.com/user-attachments/assets/71dfb5b3-f4cd-479d-a15b-5efe6cf52092)
+
+
+
+
+
+
+
