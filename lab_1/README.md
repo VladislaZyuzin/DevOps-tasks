@@ -393,8 +393,6 @@ sudo systemctl restart nginx
 4. Созданы псевдонимы для упрощения доступа к файлам
 5. Я красиво поработал :)
 
-
-
-
+[список лаб](https://github.com/VladislaZyuzin/ITMO_Cloud_Tech_Labas/tree/main)
 
 
