@@ -270,5 +270,5 @@ services:
 
 * Не пытайтесь использовать контейнеры как виртуальные машины — следуйте принципу "один контейнер — один процесс".
 
-
+[список лаб](https://github.com/VladislaZyuzin/ITMO_Cloud_Tech_Labas/tree/main)
 
