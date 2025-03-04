@@ -1,2 +1,2 @@
-# ITMO_Cloud_Tech_Labas
-Владислав Зюзин К3220
+# ITMO_Cloud_Tech_and_Optimisacion
+Владислав Зюзин
