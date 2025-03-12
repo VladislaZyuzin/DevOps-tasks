@@ -105,7 +105,7 @@ minikube image load my-flask-app:1.0
 ```
 ## Содаём кубернет-ресурсы: 
 ### Создаём файл deployment.yaml, для удобства - добавлены комменты к скрипту:
-```
+```yaml
 # Версия API Kubernetes, которую вы используете.
 # В данном случае это "apps/v1", что указывает на использование API для работы с Deployment.
 apiVersion: apps/v1
