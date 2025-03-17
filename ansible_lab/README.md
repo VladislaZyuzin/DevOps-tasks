@@ -68,3 +68,6 @@ nginx.yml
       debug:
         var: nginx_status.status
 ```
+
+![image](https://github.com/user-attachments/assets/495626d7-2f89-43a4-bdaf-63c3de263977)
+
