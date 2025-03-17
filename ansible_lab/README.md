@@ -15,3 +15,56 @@
 ![image](https://github.com/user-attachments/assets/deb2f3ed-3d76-4753-bb5f-71b54b7c2616)
 
 Создадим кастомную страницу (веб страничка):
+
+nginx.yml
+```yml
+---
+- name: Install and configure Nginx
+  hosts: webservers
+  become: yes  # Выполнять команды с правами root
+  tasks:
+    - name: Install sudo
+      apt:
+        name: sudo
+        state: present
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Start Nginx service
+      command: service nginx start
+
+    - name: Create custom index.html
+      copy:
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Hello from Ansible!</title>
+          </head>
+          <body>
+              <h1>Hello from Ansible and Docker!</h1>
+          </body>
+          </html>
+        dest: /var/www/html/index.html
+        owner: www-data
+        group: www-data
+        mode: '0644'
+
+    - name: Ensure Nginx is running
+      uri:
+        url: "http://localhost"
+        return_content: yes
+      register: nginx_status
+      ignore_errors: yes
+
+    - name: Show Nginx status
+      debug:
+        var: nginx_status.status
+```
