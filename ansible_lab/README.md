@@ -13,3 +13,5 @@
 ![image](https://github.com/user-attachments/assets/12502ea5-70a7-4ce6-bf01-dba79d6d2a8b)
 
 ![image](https://github.com/user-attachments/assets/deb2f3ed-3d76-4753-bb5f-71b54b7c2616)
+
+Создадим кастомную страницу (веб страничка):
