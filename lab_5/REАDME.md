@@ -25,6 +25,10 @@ sudo apt-get install helm
 ```bash
  minikube kubectl -- expose service prometheus-server --namespace default --type=LoadBalancer --port=8080 --target-port=9090 --name=prometheus-server-ext
 ```
+Потом введём данный код для получения кода по секретам: 
+```
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+```
 
 ![Снимок экрана от 2025-03-13 12-39-30](https://github.com/user-attachments/assets/ea5d98bd-fa20-4ac4-a368-f454f9e08d16)
 
