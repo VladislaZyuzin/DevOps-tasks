@@ -37,6 +37,8 @@ kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-passwor
 
 ![Снимок экрана от 2025-03-13 12-39-30](https://github.com/user-attachments/assets/ea5d98bd-fa20-4ac4-a368-f454f9e08d16)
 
+С этого момента пошла настройка прометеуса и графаны, для этого нужно использовать данные описанные выше, ну крч, вы поймёте всё.
+
 ![Снимок экрана от 2025-03-13 12-45-33](https://github.com/user-attachments/assets/d04ca714-f870-47e5-ad62-d12028c6cac7)
 
 ![Снимок экрана от 2025-03-13 13-12-17](https://github.com/user-attachments/assets/26a06af3-c1eb-478b-8b8b-ff5b4bb2f184)
