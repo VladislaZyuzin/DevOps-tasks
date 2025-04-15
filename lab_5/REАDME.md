@@ -20,7 +20,11 @@ sudo apt-get install helm
 
 ![Снимок экрана от 2025-03-13 12-38-58](https://github.com/user-attachments/assets/21e4169c-6d02-48c5-beaf-4397f12677ad)
 
+После нам понадобится сделать namespace для того, чтобы узнать - какие поды у нас запущены. Я решил не париться и сделал namespace в дефолтной директории, это не есть хорошая практика, но я себе разрешил на один раз. Лучше создать отдельные пространства и туда вносить свои поды с узлами. Вот код, который я использовал для себя: 
 
+```bash
+ minikube kubectl -- expose service prometheus-server --namespace default --type=LoadBalancer --port=8080 --target-port=9090 --name=prometheus-server-ext
+```
 
 ![Снимок экрана от 2025-03-13 12-39-30](https://github.com/user-attachments/assets/ea5d98bd-fa20-4ac4-a368-f454f9e08d16)
 
