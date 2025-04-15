@@ -13,9 +13,14 @@ sudo apt-get update
 sudo apt-get install helm
 ```
 После потребовалось установить инструмент для снятия метрик с сайта - Prometheus, для этого вводим команды как на скрине: 
+
 ![Снимок экрана от 2025-03-13 12-38-11](https://github.com/user-attachments/assets/7afdc1e3-9264-4b02-8244-557ee3dbc14c)
 
+После - установим Grafana, для этого введём следующие команды: 
+
 ![Снимок экрана от 2025-03-13 12-38-58](https://github.com/user-attachments/assets/21e4169c-6d02-48c5-beaf-4397f12677ad)
+
+
 
 ![Снимок экрана от 2025-03-13 12-39-30](https://github.com/user-attachments/assets/ea5d98bd-fa20-4ac4-a368-f454f9e08d16)
 
