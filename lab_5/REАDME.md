@@ -29,6 +29,11 @@ sudo apt-get install helm
 ```
 kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
+Если какие то команды не были отражены, то лучше их взять из скриншотов, там будет, кстати отражаться моменты, когда вы переходите в прометеус, например - это показатель того, что всё работает.
+
+![Снимок экрана от 2025-03-13 13-50-00](https://github.com/user-attachments/assets/3adfcb7a-a385-4d62-812c-3d13b11b8d5f)
+
+![Снимок экрана от 2025-03-13 13-50-30](https://github.com/user-attachments/assets/d2c653e1-15a6-4180-a001-9323b9302f17)
 
 ![Снимок экрана от 2025-03-13 12-39-30](https://github.com/user-attachments/assets/ea5d98bd-fa20-4ac4-a368-f454f9e08d16)
 
@@ -50,7 +55,5 @@ kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-passwor
 
 ![Снимок экрана от 2025-03-13 13-44-40](https://github.com/user-attachments/assets/91e387d9-d13f-4658-9c1a-0f92d43cd085)
 
-![Снимок экрана от 2025-03-13 13-50-00](https://github.com/user-attachments/assets/3adfcb7a-a385-4d62-812c-3d13b11b8d5f)
 
-![Снимок экрана от 2025-03-13 13-50-30](https://github.com/user-attachments/assets/d2c653e1-15a6-4180-a001-9323b9302f17)
 
