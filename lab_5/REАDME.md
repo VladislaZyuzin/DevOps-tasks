@@ -4,7 +4,7 @@
 * Сделать мониторинг сервиса поднятого в k8s с помощью Prometheus и Grafana. Показать 2 рабочих графика, прикрепить скрины процесса.
 
 ## Ход работы 
-Сначала был поднят мой сервис в миникубе, который был взят из 3 лабораторной работы, URL сайта виден, так как кубер поднят. Далее были введены команды: 
+Сначала был поднят мой сервис в миникубе, который был взят из 3 лабораторной работы, URL сайта виден, так как кубер поднят. Далее были введены команды для установки helm: 
 ```bash
 curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
 sudo apt-get install apt-transport-https --yes
@@ -12,7 +12,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.
 sudo apt-get update
 sudo apt-get install helm
 ```
-
+После потребовалось установить инструмент для снятия метрик с сайта - Prometheus, для этого вводим команды как на скрине: 
 ![Снимок экрана от 2025-03-13 12-38-11](https://github.com/user-attachments/assets/7afdc1e3-9264-4b02-8244-557ee3dbc14c)
 
 ![Снимок экрана от 2025-03-13 12-38-58](https://github.com/user-attachments/assets/21e4169c-6d02-48c5-beaf-4397f12677ad)
