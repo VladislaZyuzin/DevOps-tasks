@@ -1,7 +1,5 @@
 # Лабораторная работа по терраформу
 
-![image](https://github.com/user-attachments/assets/5ed3295e-4021-4f2d-af52-dc4f9e799c20)
-
 > Данная лабораторная работа была выполнена на ОС Ubuntu Linux
 
 ##  Подготовка
