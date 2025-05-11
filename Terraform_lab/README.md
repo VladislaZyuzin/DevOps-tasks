@@ -40,7 +40,7 @@ yc --version
 env | grep -i proxy
 unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY
 ```
-
+## ОСновная часть
 После разрешения проблемы переходим в директорию `yc-terraform`, если ещё не перешли. Теперь следует создать 3 пустых файла, которые в дальнейшем будут заполняться: 
 ```bash
 touch {main.tf,outputs.tf,variables.tf}
@@ -57,11 +57,10 @@ terraform {
 }
 
 provider "yandex" {
-  cloud_id  = "b1gqsdr166533mquj5gp"
-  folder_id = "b1gphoihhtvjcfi2ulp9"
+  cloud_id  = "<ваш cloud-id>"     # Получить: yc config get cloud-id
+  folder_id = "<ваш folder-id>"    # Получить: yc config get folder-id
   zone      = "ru-central1-a"
-  token     = "t1.9euelZrOzJLNlZKVkcmNksyLjpecz-3rnpWanJuJyZbMzYrJk87Kj86bl8bl9PciFQM_-e9NRCnF3fT3YkMAP_nvTUQpxc3n9euelZqai5WZlombi86clY2Jx5Odle_8xeuelZqai5WZlombi86clY2Jx5OdlQ.5nO-h-25vA1fqBvCvdj5mFuf5aTMV0y8_9laThac3-ja_xp1nwN2buKbsIx3IeYyUb0X5AoT9BswfvYstv6qAQ"
-}
+  token     = "<ваш_oauth_токен>"  # Его можно взять введя команду: yc iam create-token
 
 # Создаем сеть
 resource "yandex_vpc_network" "network" {
@@ -109,4 +108,28 @@ resource "yandex_compute_instance" "vm" {
 output "external_ip" {
   value = yandex_compute_instance.vm.network_interface.0.nat_ip_address
 }
+```
+И ещё, необходимо заполнить файл для ssh, который мы указываем в `main.tf`. Для этого проверяем наличие SSH - ключа: 
+```bash
+ls ~/.ssh/id_rsa.pub
+```
+Если его нет, то вводим данную команду: 
+```bash
+ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
+```
+Команда создаст и сгенерирует ключ и при создании инфроструктуры код в `main.tf` будет обращаться к SSH ключу. 
+
+## Запуск процесса
+
+Для запуска процесса требуется, чтобы тф на локальном компа видел облако. Для этого введём команду:
+```bash
+terraform init
+```
+Так будет выглядеть успешный вывод: 
+![image](https://github.com/user-attachments/assets/aa99cdf7-e0bd-4b82-be8a-e65edfd091fe)
+
+Далее нам следует понять - что создастся в результате нашей работы. Для этого введём команду: 
+
+```bash
+terraform plan
 ```
