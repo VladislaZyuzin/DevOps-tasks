@@ -61,6 +61,7 @@ provider "yandex" {
   folder_id = "<ваш folder-id>"    # Получить: yc config get folder-id
   zone      = "ru-central1-a"
   token     = "<ваш_oauth_токен>"  # Его можно взять введя команду: yc iam create-token
+}
 
 # Создаем сеть
 resource "yandex_vpc_network" "network" {
