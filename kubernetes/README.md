@@ -237,25 +237,10 @@ spec:
           volumeMounts:
           - name: logs-volume
             mountPath: /app/logs
-          # - name: france-vintage
-          #   mountPath: /webserver_static/webapp/france-vintage
-          # - name: mskld_images
-          #   mountPath: /webserver_static/webapp/mskld_images
-          # - name: shared-static
-          #   mountPath: /webserver_static/webapp/user_files 
 
       volumes:
         - name: logs-volume
           emptyDir: {}
-        # - name: france-vintage
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend
-        # - name: mskld_images
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend   
-        # - name: shared-static
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend  
 ---
 apiVersion: v1
 kind: Service
@@ -335,24 +320,9 @@ spec:
           volumeMounts:
             - name: logs-volume
               mountPath: /app/logs
-            # - name: shared-static
-            #   mountPath: /webserver_static/webapp/user_files
-            # - name: france-vintage
-            #   mountPath: /webserver_static/webapp/france-vintage
-            # - name: mskld_images
-            #   mountPath: /webserver_static/webapp/mskld_images
       volumes:
         - name: logs-volume
-          emptyDir: {}
-        # - name: shared-static
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend
-        # - name: france-vintage
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend
-        # - name: mskld_images
-        #   persistentVolumeClaim:
-        #     claimName: s3-pvc-$NAMESPACE-frontend    
+          emptyDir: {} 
 ---
 apiVersion: v1
 kind: Service
