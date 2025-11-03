@@ -366,25 +366,10 @@ spec:
         - name: nginx-config
           mountPath: /etc/nginx/conf.d
           readOnly: true
-        # - name: user-files-volume
-        #   mountPath: /webserver_static/webapp/user_files
-        # - name: france-vintage
-        #   mountPath: /webserver_static/webapp/france-vintage
-        # - name: mskld_images
-        #   mountPath: /webserver_static/webapp/mskld_images
       volumes:
       - name: nginx-config
         configMap:
-          name: frontend-nginx-config
-      # - name: user-files-volume
-      #   persistentVolumeClaim:
-      #     claimName: s3-pvc-$NAMESPACE-frontend
-      # - name: france-vintage
-      #   persistentVolumeClaim:
-      #     claimName: s3-pvc-$NAMESPACE-frontend
-      # - name: mskld_images
-      #   persistentVolumeClaim:
-      #     claimName: s3-pvc-$NAMESPACE-frontend      
+          name: frontend-nginx-config    
     
 
 ---
