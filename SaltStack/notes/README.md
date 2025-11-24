@@ -300,3 +300,25 @@ kernel updated:
   module.run:
     - name: system.reboot
 ```
+
+### Порядок исполнения команд
+* Лексикографический (как накидали - так и исполняется, про порядок)
+```sls
+---
+# Пример автоматического упорядочивания состояний
+state1:
+  test.succeed_with_changes
+state2:
+  test.succeed_with_changes
+state3:
+  test.succeed_with_changes
+state4:
+  test.succeed_with_changes
+```
+* По флагу `order`
+```sls
+
+```
+* По реквезитам
+Документация советует взять один способ и следовать ему
+
