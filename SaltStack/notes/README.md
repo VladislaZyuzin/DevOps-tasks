@@ -352,7 +352,94 @@ state4:
 * По флагу `order`
 ```sls
 
+---
+# Пример упорядочивания состояний ключом order
+state1:
+  test.succeed_with_changes:
+    - order: 3
+state2:
+  test.succeed_with_changes:
+    - order: 2
+state3:
+  test.succeed_with_changes:
+    - order: 1
+state4:
+  test.succeed_with_changes:
+    - order: 4
 ```
+Как логично предположить - тут формула выполняет сейты по порядку, который указан в `order`. 
 * По реквезитам
+
+```sls
+---
+
+# Пример упорядочивания состояний реквизитами
+
+state1:
+  test.succeed_with_changes: [] # В этом стейте ничего не задано по реквизитом
+
+state2:
+  test.succeed_with_changes:
+    - require:
+        - state1  # Этот стейт выполняется только при изменениях в стейте 1
+
+state3:
+  test.succeed_with_changes:
+    - onchanges:  # А так же watch, listen
+        - state1
+        - test: state2  # Тут стейт выполняется при изменении в стейте 1 или 2
+
+state4:
+  test.succeed_with_changes:
+    - prereq:
+        - state1  # Пререквизит для стейта 1, запустится самым первым, после стейт 1
+
+unhappy_state:
+  test.succeed_with_changes:
+    - onfail:
+        - state*  # Этот стейт выполнится если будет ошибка в одном из стейтов, логично его использовать как очисту после ошибки
+```
+
+После такого - всё запустится, по идее. 
+
+Далее - поменяем модули в стейтах таким образом, чтобы отработал грамотно state4: 
+```sls
+---
+
+# Пример упорядочивания состояний реквизитами
+
+state1:
+  test.succeed_without_changes: []
+
+state2:
+  test.succeed_without_changes:
+    - require:
+        - state1
+
+state3:
+  test.failed_with_changes:
+    - onchanges:  # А так же watch, listen
+        - state1
+        - test: state2
+
+state4:
+  test.succeed_with_changes:
+    - prereq:
+        - state1
+
+unhappy_state:
+  test.succeed_with_changes:
+    - onfail:
+        - state*
+```
+запустится только 1, 2 и 4, так как первый ни от кого не зависит и он прописан как успешный, 2-й, так как запустился 1-й, а четвёртый запустится, так как поломался 3-й, 3-й не запустился, так как нет изменений в 1-м и 2-м стейтах
+
 **Документация советует взять один способ и следовать ему**
+
+НАПОМИНАНИЕ, примерно так выглядит исполнение стейтов по команде в терминале:
+```bash
+salt nameserver state.apply kernel_updated   # Тут берётся файл kernel_updated.sls
+```
+
+### Каверзы YAML
 
