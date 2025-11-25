@@ -835,11 +835,10 @@ gitfs_base: master
 # Путь к пилларам по умолчанию
 base:
   - /srv/pillar/
-
-reactor:
-  - salt/auth:
-    - salt://reactor/highstate.sls
-    - salt://reactor/keys.sls
+#reactor:
+#  - salt/auth:
+#    - salt://reactor/highstate.sls
+#    - salt://reactor/keys.sls
 
 nodegroups:
   rpm-hosts: 'G@os_family:RedHat'
