@@ -839,3 +839,27 @@ shedule:
     splay: 3
 ```
 
+## О Salt Mine
+
+* Шахты похожи на другие грейны  
+* Значения доступны для миньонов  
+* Можно настроить в конфиге миньона  
+* Можно настроить в пилларах   
+* Для получения значений `mine.get`  
+
+### Пример
+
+## Оркестрация
+
+* Salt Orchestration Runner
+* Выше, чем highstate
+* Вызовы функций для управления инфрой
+
+Вызывается: 
+
+```bash
+salt-run state.orchestrate SLS_ФАЙЛ
+```
+
+<img width="1119" height="605" alt="image" src="https://github.com/user-attachments/assets/6d961c41-1057-4594-b405-578a7b435990" />
+
