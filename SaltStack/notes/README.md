@@ -164,7 +164,7 @@ log_level_logfile: info
 ### Команды для лучшего понимания системы: 
 
 * `salt-run fileserver.dir_list` [saltenv=ОКРУЖЕНИЕ] - способ отладить пути для окружения. Если нужно убедится, что мастер видит папки. НА МАСТЕРЕ
-( `salt-run.fileserver.file_list` [saltenv=ОКРУЖЕНИЕ] - способ показать, какие файлы есть в дире (папке) в мастере 
+* `salt-run.fileserver.file_list` [saltenv=ОКРУЖЕНИЕ] - способ показать, какие файлы есть в дире (папке) в мастере 
 
 Конфиг перечитывается в рантайме. Они хранятся в /var/cache/salt/
 
@@ -293,14 +293,14 @@ kernel updated:
   pkg.uptodate:
     - pkgs:
         - kernel
-    - refresh: true
+    - refresh: true  # Обновление ядра 
   file.comment:
-    - name: '/etc/default/grub'
-    - regex: '^GRUB_DEFAULT|^GRUB_DISABLE_SUBMENU'
+    - name: '/etc/default/grub'  
+    - regex: '^GRUB_DEFAULT|^GRUB_DISABLE_SUBMENU'  # Комментирование строк 
   cmd.run:
-    - name: 'grub2-mkconfig -o /boot/grub2/grub.cfg'
+    - name: 'grub2-mkconfig -o /boot/grub2/grub.cfg'  # Применение конфига 
   module.run:
-    - name: system.reboot
+    - name: system.reboot   # Ребут сервера/вм
 ```
 
 ### Порядок исполнения команд
@@ -317,10 +317,19 @@ state3:
 state4:
   test.succeed_with_changes
 ```
+
+(Если сделать дублирование по типу
+```sls
+state1:
+  test.succeed_with_changes
+  test.succeed_with_changes
+```
+то бует вырисовываться ошибка )
+
 * По флагу `order`
 ```sls
 
 ```
 * По реквезитам
-Документация советует взять один способ и следовать ему
+**Документация советует взять один способ и следовать ему**
 
