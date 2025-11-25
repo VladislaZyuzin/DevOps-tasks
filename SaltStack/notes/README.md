@@ -324,7 +324,30 @@ state1:
   test.succeed_with_changes
   test.succeed_with_changes
 ```
-то бует вырисовываться ошибка )
+или
+```sls
+state1:
+  test.succeed_with_changes
+  test.failed_with_changes
+```
+
+то будет вырисовываться ошибка. Если же будут использоваться другие модули в стейтах, например: 
+
+```sls
+---
+# Пример автоматического упорядочивания состояний
+state1:
+  test.succeed_with_changes: []
+  cmd.run:
+    - name: 'echo Hello'
+state2:
+  test.succeed_with_changes
+state3:
+  test.succeed_with_changes
+state4:
+  test.succeed_with_changes
+```
+То тогда стейты заведутся, так как будут различные модули указаны)
 
 * По флагу `order`
 ```sls
