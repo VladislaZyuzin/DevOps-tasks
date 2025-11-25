@@ -528,6 +528,11 @@ power_management_timeouts:
       {% endfor %}
       {% endfor %}
 ```
+Чтобы посмотреть, как примениться команда (драйран организовать): 
+```bash
+salt-call slsutil.render <путь-к-файлу>   # чтобы отрендерить формулу
+```
+
 Командой применения будет: 
 ```bash
 salt minion1 slsutill.renderer salt://jinja_sample.sls  # В случае - если мы выполняем команду на миньоне
@@ -539,4 +544,37 @@ salt minion1 slsutill.renderer jinja_sample  # В случае - если мы �
 
 <img width="694" height="596" alt="image" src="https://github.com/user-attachments/assets/aeda9a6c-5a72-46fd-b567-8b9945c965ea" />
 
+Ещё один пример:
+
+```sls
+﻿---
+
+# Пример использования пилларов в формуле
+
+{%
+  set settings = pillar.get(
+    'power_settings',
+    ['standby', 'hibernate', 'monitor', 'disk'])
+%}
+
+power_management_timeouts:
+  cmd.run:
+    - names:
+      {% for setting in settings %}
+      {% for power_mode in pillar.get('power_modes', ['ac', 'dc']) %}
+      - powercfg /change /{{ setting }}-timeout-{{ power_mode }} 0
+      {% endfor %}
+      {% endfor %}
+```
+
+Далее понадобится синхронизация для пилларов:
+```bash
+salt-call saltutil.refresh_pillar # Чтобы синхронизировать пиллары
+```
+
+Для применения конфига: 
+```bash
+salt minion1 slsutill.renderer salt://jinja_pillar.sls  # В случае - если мы выполняем команду на миньоне
+```
+Вывод будет таким же, как и раньше
 
