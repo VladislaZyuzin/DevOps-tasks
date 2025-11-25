@@ -87,4 +87,5 @@ nodegroups:
   red: '*-red'
 
 # vi: ft=yaml
+
 ```
