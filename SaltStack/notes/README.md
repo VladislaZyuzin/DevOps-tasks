@@ -863,3 +863,40 @@ salt-run state.orchestrate SLS_ФАЙЛ
 
 <img width="1119" height="605" alt="image" src="https://github.com/user-attachments/assets/6d961c41-1057-4594-b405-578a7b435990" />
 
+
+### Примерный вид конфига и его разбор
+
+```sls
+---
+
+# Файл содержит пример для orchestrate runner
+# Запускается командой salt-run state.orchestrate orch.stand
+
+saltutil.sync_all:
+  salt.function:
+    - tgt: '*'
+
+mine.update:
+  salt.function:
+    - tgt: '*'
+
+highstate:
+  salt.state:
+    - tgt: '*'
+    - highstate: true
+
+site:
+  salt.state:
+    - tgt: 'rpm-hosts'
+    - tgt_type: nodegroup
+    - sls:
+        - site
+
+proxy:
+  salt.state:
+    - tgt: 'deb-hosts'
+    - tgt_type: nodegroup
+    - sls:
+        - proxy
+```
+
