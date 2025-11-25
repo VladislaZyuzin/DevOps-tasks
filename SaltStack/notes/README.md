@@ -866,6 +866,8 @@ salt-run state.orchestrate SLS_ФАЙЛ
 
 ### Примерный вид конфига и его разбор
 
+Файл: `orch.stand.sls` (в ext4 находится ../orch/stand.sls)
+
 ```sls
 ---
 
@@ -873,7 +875,7 @@ salt-run state.orchestrate SLS_ФАЙЛ
 # Запускается командой salt-run state.orchestrate orch.stand
 
 saltutil.sync_all:
-  salt.function:
+  salt.function:  # функция локального клиента
     - tgt: '*'
 
 mine.update:
@@ -890,13 +892,70 @@ site:
     - tgt: 'rpm-hosts'
     - tgt_type: nodegroup
     - sls:
-        - site
+        - site  # На rmp - хосты держат в себе сайт
 
 proxy:
   salt.state:
     - tgt: 'deb-hosts'
     - tgt_type: nodegroup
     - sls:
-        - proxy
+        - proxy    # Эти хосты в себе держат проксю
 ```
 
+Запуск раннера: 
+```bash
+salt-run state.orchestrate orch.stand
+```
+
+#### Подробности ссылок на конфиги: 
+
+Для сайта был взят конфиг `site.sls`:
+
+```sls
+---
+
+nginx:
+  pkg:
+    - installed
+  service.running:
+    - watch:
+        - file: /etc/nginx/nginx.conf
+    - enable: true
+
+tune_firewall:
+  firewalld.present:
+    - name: public
+    - services:
+        - http
+
+/srv/www/site/index.html:
+  file.managed:
+    - source: salt://files/site_html.jinja
+    - template: jinja
+    - makedirs: true
+    - show_changes: false
+
+/etc/nginx/nginx.conf:
+  file.managed:
+    - source: salt://files/nginx.conf
+    - show_changes: false
+```
+
+Для прокси: `proxy.sls`
+
+```sls
+---
+
+nginx:
+  pkg:
+    - installed
+  service.running:
+    - watch:
+        - file: /etc/nginx/nginx.conf
+    - enable: true
+
+/etc/nginx/nginx.conf:
+  file.managed:
+    - source: salt://files/nginx_proxy_conf.jinja
+    - template: jinja
+```
