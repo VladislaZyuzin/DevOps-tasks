@@ -776,9 +776,34 @@ salt-run event.sent ТЭГ СЛОВАРЬ для отладки
 
 ### Пример работы с мастером
 
+Я взял конфиг из начала и раскомментил строки:
+
 ```yaml
 reactor:
   - salt/auth:
     - salt://reactor/highstate.sls
     - salt://reactor/keys.sls
+```
+
+После применения - идёт ребут мастера
+
+Рассмотрим локал-реактор
+```sls
+---
+# Это local-реактор
+run_highstate:
+  local.state.apply:  # тип local, функция - state.apply
+    - tgt: '*'
+```
+
+Рассмотрим wheel-реактор
+```sls
+---
+
+# Это wheel-реактор
+reject_red:
+  wheel.key.reject:
+    - args:
+        - match: '*-red'
+        - include_accepted: True
 ```
