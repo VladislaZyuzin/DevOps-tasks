@@ -1,0 +1,16 @@
+##########################################
+##### Primary configuration settings #####
+##########################################
+master: 192.168.184.178
+id: salt-owls-blue
+startup_states: ''
+file_client: remote
+grains:
+  roles:
+    - minion
+    - owls
+    - k8s-worker
+  group: blue
+  team: owls
+log_level: info
+log_level_logfile: info
