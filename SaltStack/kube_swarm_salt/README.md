@@ -381,3 +381,78 @@ sudo salt-ssh '*' test.ping
 ```
 
 Если она заработала, то это победа
+
+### Поднятие docker-swarm
+
+Для поднятия кластера docker-swarm мною было использовано 2 вм: salt-cats-blue (воркер), salt-cats-red (мастер). Основная работа теперь ложится на стейты соли, нам нужно прежде всего - установить докер на обе вм, а затем - назначить salt-cats-blue - воркером, а salt-cats-red - мастером. 
+
+Для того, чтобы всё завелось - нужно написать формулу для установки докера на обе вм:
+
+```sls
+# Установка docker
+
+remove_old_docker:  # Удаляем старые пакеты установки, если докер был установлен до этого
+  pkg.removed:
+    - pkgs:
+      - docker
+      - docker-engine
+      - docker.io
+      - containerd
+      - runc
+
+install_prerequisites:  # Устанавливаем зависимости
+  pkg.installed:
+    - pkgs:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+
+add_docker_gpg_key:  # Добавляем ключь
+  cmd.run:
+    - name: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    - unless: test -f /usr/share/keyrings/docker-archive-keyring.gpg
+    - require:
+      - pkg: install_prerequisites
+
+add_docker_repo:  # Добавляем репу докера
+  cmd.run:
+    - name: |
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+    - unless: test -f /etc/apt/sources.list.d/docker.list
+    - require:
+      - cmd: add_docker_gpg_key
+
+update_apt:
+  cmd.run:
+    - name: apt-get update
+    - require:
+      - cmd: add_docker_repo
+
+install_docker:  # Устанавливаем докер
+  pkg.installed:
+    - pkgs:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    - require:
+      - cmd: update_apt
+
+docker_service:  
+  service.running:
+    - name: docker
+    - enable: True
+    - require:
+      - pkg: install_docker
+
+add_user_to_docker:  # Добавляем пользователя
+  group.present:
+    - name: docker
+    - addusers:
+      - root
+    - require:
+      - pkg: install_docker
+```
