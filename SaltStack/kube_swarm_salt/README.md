@@ -271,3 +271,113 @@ Host salt-cats-red
 ssh salt-owls-green
 ```
 
+После того, как на все вм удалалось зайти по ssh с мастера - то устанавливаем salt-ssh:
+
+```bash
+sudo apt-get install salt-ssh 
+```
+
+Далее - нужно написать roster-конфигурацию, которая похожа на конфиг ssh:
+```yaml
+salt-owls-blue:
+  host: 192.168.184.178
+  port: 224
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-blue
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-worker
+      group: blue
+      team: owls
+
+salt-owls-green:
+  host: 192.168.184.178
+  port: 222
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-green
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-master
+      group: green
+      team: owls
+
+salt-owls-red:
+  host: 192.168.184.178
+  port: 223
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-red
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-worker
+      group: red
+      team: owls
+
+salt-cats-blue:
+  host: 192.168.184.178
+  port: 225
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-cats-blue
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - cats
+        - swarm-worker
+      group: blue
+      team: cats
+
+salt-cats-red:
+  host: 192.168.184.178
+  port: 226
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-cats-red
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - cats
+        - swarm-master
+      group: red
+      team: cats
+```
+
+А на миньонах - разкомментируем и активируем SCP subsystem: 
+```bash
+# На каждом миньоне
+for port in 222 223 224 225 226; do
+  ssh -p $port root@192.168.184.178 "echo 'Subsystem sftp /usr/lib/openssh/sftp-server' >> /etc/ssh/sshd_config && systemctl restart sshd"
+done
+```
+
+Проверим работу: 
+
+```bash
+echo "test" > /tmp/test.txt
+scp -P 223 /tmp/test.txt root@192.168.184.178:/tmp/
+```
+
+Если всё ок, то довершаем всё командой:
+```bash
+sudo salt-ssh '*' test.ping
+```
+
+Если она заработала, то это победа
