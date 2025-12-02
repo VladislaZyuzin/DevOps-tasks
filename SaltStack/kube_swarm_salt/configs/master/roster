@@ -1,0 +1,79 @@
+salt-owls-blue:
+  host: 192.168.184.178
+  port: 224
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-blue
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-worker
+      group: blue
+      team: owls
+
+salt-owls-green:
+  host: 192.168.184.178
+  port: 222
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-green
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-master
+      group: green
+      team: owls
+
+salt-owls-red:
+  host: 192.168.184.178
+  port: 223
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-owls-red
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - owls
+        - k8s-worker
+      group: red
+      team: owls
+
+salt-cats-blue:
+  host: 192.168.184.178
+  port: 225
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-cats-blue
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - cats
+        - swarm-worker
+      group: blue
+      team: cats
+
+salt-cats-red:
+  host: 192.168.184.178
+  port: 226
+  user: root
+  priv: /root/.ssh/id_ed25519
+  #tty: True
+  thin_dir: /tmp/salt-ssh-cats-red
+  minion_opts:
+    grains:
+      roles:
+        - minion
+        - cats
+        - swarm-master
+      group: red
+      team: cats
