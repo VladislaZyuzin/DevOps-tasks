@@ -27,6 +27,8 @@ wsl --install -d Ubuntu --name salt-owls-red
 wsl --install -d Ubuntu --name salt-owls-blue
 ```
 
+### Установка SaltStack для убунту
+
 После того, как вмки были установлены - я воспользовался скриптом для установки salt-master и salt-minion на отдельно взятые вм. Мастером я назначил вм "master", остальных назначил миньонами, команды для установки я брал отсюда: [установка SaltStack на убунту](https://cloudspinx.com/install-saltstack-master-minion-on-ubuntu/)
 
 После этого - я настроил просто связь по соли. Для этого - я внёс настройки конфига в мастер: 
@@ -136,6 +138,11 @@ log_fmt_console: '[%(levelname)-8s] %(message)s'
 log_fmt_logfile: '%(asctime)s,%(msecs)03d [%(name)-17s][%(levelname)-8s] %(message)s'
 ```
 
+Применяем: 
+```bash
+systemctl restart salt-master.service
+```
+
 В миньоны я внёс конфиги, например, для salt-owls-green (будущий мастер в кубе для всех owls машин):
 
 ```yaml
@@ -171,3 +178,96 @@ grains:
 log_level: info
 log_level_logfile: info
 ```
+
+Применяем: 
+```bash
+systemctl restart salt-minion.service
+```
+
+Остальные файлы можно найти в этой же папке 
+
+Если всё хорошо - то получился пропинговать ВМки через соль: 
+
+```bash
+salt '*' test.ping
+```
+
+Будет такой вывод: 
+
+```
+salt-owls-blue:
+    True
+salt-owls-red:
+    True
+salt-cats-blue:
+    True
+salt-owls-green:
+    True
+salt-cats-red:
+    True
+```
+
+### Настойка salt-ssh 
+
+Для настройки salt-ssh прежде всего необходимо поднять ssh-сервер на вмках. В этом есть сложности, так как wsl использует единственный IP адрес для всех вм в сети, из-за чего - оптимальным решением будет использование различных портов для линка по ssh (линк должен идти от пользователя root на вм master к остальным вм с пользователем root). Для этого - вносим подобного рода конфиг в каждую вм, чтобы они не путались в своей сети: 
+
+```bash
+Port 221
+PermitRootLogin yes
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+UsePAM yes
+```
+Далее - обязательно обновляем systemctl, чтобы конфигурация применилась
+
+```bash
+systemctl restart ssh
+```
+
+Обязательно создаём ключи для связи с вм на мастере командой: 
+
+```bash
+ssh-keygen
+
+```
+
+Для того, чтобы было удобнее подключаться - внесём для пользователя рут следующую конфигурацию в папку `/root/.ssh/config`: 
+
+```
+Host salt-owls-blue
+    HostName 192.168.184.178
+    User root
+    Port 224
+    IdentityFile ~/.ssh/id_ed25519
+
+Host salt-owls-green
+    HostName 192.168.184.178
+    User root
+    Port 222
+    IdentityFile ~/.ssh/id_ed25519
+
+Host salt-owls-red
+    HostName 192.168.184.178
+    User root
+    Port 223
+    IdentityFile ~/.ssh/id_ed2551
+
+Host salt-cats-blue
+    HostName 192.168.184.178
+    User root
+    Port 225
+    IdentityFile ~/.ssh/id_ed25519
+
+Host salt-cats-red
+    HostName 192.168.184.178
+    User root
+    Port 226
+    IdentityFile ~/.ssh/id_ed25519
+```
+
+Теперь на сервера можно подключаться командой по типу: 
+
+```bash
+ssh salt-owls-green
+```
+
