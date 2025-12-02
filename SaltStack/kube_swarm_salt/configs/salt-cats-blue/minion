@@ -1,0 +1,15 @@
+##### Primary configuration settings #####
+##########################################
+master: 192.168.184.178
+id: salt-cats-blue
+startup_states: ''
+file_client: remote
+grains:
+  roles:
+    - minion
+    - cats
+    - swarm-worker
+  group: blue
+  team: cats
+log_level: info
+log_level_logfile: info
