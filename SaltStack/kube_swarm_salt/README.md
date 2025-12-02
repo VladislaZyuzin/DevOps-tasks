@@ -456,3 +456,124 @@ add_user_to_docker:  # Добавляем пользователя
     - require:
       - pkg: install_docker
 ```
+
+После - прописываем формулу для мастера: 
+
+```sls
+# Docker Swarm Master (salt-cats-red)
+
+include:
+  - docker.init
+
+init_swarm:
+  cmd.run:
+    - name: "docker swarm init --advertise-addr {{ grains['fqdn_ip4'][0] }}"
+    - unless: "docker info | grep -q 'Swarm: active'"
+    - require:
+      - service: docker_service
+
+get_worker_token:
+  cmd.run:
+    - name: "docker swarm join-token -q worker > /tmp/swarm-worker-token"
+    - onchanges:
+      - cmd: init_swarm
+
+get_manager_token:
+  cmd.run:
+    - name: "docker swarm join-token -q manager > /tmp/swarm-manager-token"
+    - onchanges:
+      - cmd: init_swarm
+
+swarm_info:
+  cmd.run:
+    - name: "docker node ls"
+    - require:
+      - cmd: init_swarm
+```
+
+И для воркера: 
+
+```sls
+# Docker Swarm Worker (salt-cats-blue)
+
+include:
+  - docker.init
+
+# Получить токен с мастера
+get_swarm_token:
+  cmd.run:
+    - name: scp -P 226 -o StrictHostKeyChecking=no root@192.168.184.178:/tmp/swarm-worker-token /tmp/
+    - creates: /tmp/swarm-worker-token
+    - require:
+      - service: docker_service
+
+# Присоединиться к Swarm
+join_swarm:
+  cmd.run:
+    - name: docker swarm join --token $(cat /tmp/swarm-worker-token) 192.168.184.178:2377
+    - unless: docker info | grep -q 'Swarm: active'
+    - require:
+      - cmd: get_swarm_token
+
+# Проверить статус
+check_swarm_status:
+  cmd.run:
+    - name: docker info | grep Swarm
+    - require:
+      - cmd: join_swarm
+```
+
+Так же - не забываем прописать top.sls, по которому соль будет запускать конфиги и ориентироваться в очерёдности и задачах:
+
+```sls
+base:
+  # Docker Swarm на cats VMs
+  'salt-cats-red':
+    - docker
+    - swarm.master
+
+  'salt-cats-blue':
+    - docker
+    - swarm.worker
+
+  # Kubernetes на owls VMs
+  'salt-owls-green':
+    - docker
+    - kubernetes.master
+
+  'salt-owls-blue':
+    - docker
+    - kubernetes.worker
+
+  'salt-owls-red':
+    - docker
+    - kubernetes.worker
+```
+Далее - применяем конфигурацию: 
+
+```bash
+# Установка Docker на salt-cats-red
+sudo salt-ssh 'salt-cats-red' state.apply docker
+
+# Установка Docker на salt-cats-blue
+sudo salt-ssh 'salt-cats-blue' state.apply docker
+```
+
+После этого - инициализируем мастера: 
+```bash
+sudo salt-ssh 'salt-cats-red' state.apply swarm.master
+```
+
+Немного ждём и инициализируем миньона: 
+
+```bash
+sudo salt-ssh 'salt-cats-blue' state.apply swarm.worker
+```
+
+После - проверяем работу: 
+
+```bash
+sudo salt-ssh 'salt-cats-red' cmd.run 'docker node ls'
+``
+
+А теперь самое интересное. В WSL2 оркестрация недоступна ввиду того, что Hyper-V даёт всего один айпи, маскимум, что можно сделать для salt-ssh - настроить связь по портам, но для полноценной оркестрации - понадобится либо другая технология виртуализации на винде для линукса, либо тачки, так что продолжение следует
