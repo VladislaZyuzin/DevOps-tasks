@@ -37,7 +37,7 @@
 ```bash
 cat /srv/pillar/swarm.sls
 
-```yamml 
+```yaml 
 swarm:
   # IP адрес для advertise-addr
   advertise_addr: 10.70.8.20
