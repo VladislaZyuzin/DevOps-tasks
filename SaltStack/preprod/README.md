@@ -79,7 +79,7 @@ salt -G 'roles:swarm-master' pillar.items
 
 После - пропишем конфигурации для init.sls и master.sls, так как сворм у нас однонодный, то нода одновременно будет и менеджером и воркером: 
 
-Пример: /srv/salt/base/swarm/init.sls
+Пример: `/srv/salt/base/swarm/init.sls`
 
 ```yaml
 add_docker_gpg_key:
@@ -116,3 +116,29 @@ add_root_to_docker:
     - addusers:
       - root
 ```
+
+Пример /srv/salt/base/swarm/master.sls:
+
+```yaml
+init_swarm:
+  cmd.run:
+    - name: docker swarm init --advertise-addr {{ pillar['swarm']['advertise_addr'] }}
+    - unless: "docker info | grep -q 'Swarm: active'"
+```
+
+После чего - применяем конфигурцаии одну за одной
+
+```bash
+salt 'salt-swarm' state.apply swarm.init
+
+# Проверим, всё ли ок
+
+salt 'salt-swarm' state.apply swarm.master
+```
+
+При положительном выводе - проверяем ноды на сворме: 
+
+```bash
+salt 'salt-swarm' cmd.run 'docker node ls'
+```
+
