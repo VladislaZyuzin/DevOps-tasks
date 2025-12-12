@@ -126,6 +126,37 @@ init_swarm:
     - unless: "docker info | grep -q 'Swarm: active'"
 ```
 
+Не забываем про top.sls, он для всех инсталляций `/srv/salt/base/top.sls`:
+
+```yaml
+base:
+  'roles:swarm-master':
+    - match: grain
+    - swarm.init
+    - swarm.master
+    - swarm.stack
+
+  'roles:k3s-master':
+    - match: grain
+    - k3s.init
+    - k3s.master
+
+  'roles:k3s-node':
+    - match: grain
+    - k3s.init
+    - k3s.worker
+
+  'roles:k3s-check-master':
+    - match: grain
+    - k3s.init
+    - k3s.master
+
+  'roles:k3s-check-node':
+    - match: grain
+    - k3s.init
+    - k3s.worker
+```
+
 После чего - применяем конфигурцаии одну за одной
 
 ```bash
@@ -135,6 +166,9 @@ salt 'salt-swarm' state.apply swarm.init
 
 salt 'salt-swarm' state.apply swarm.master
 ```
+Должно быть примерно так: 
+
+<img width="931" height="601" alt="image" src="https://github.com/user-attachments/assets/36021a70-4362-40fa-bf00-ffea61791781" />
 
 При положительном выводе - проверяем ноды на сворме: 
 
@@ -142,3 +176,68 @@ salt 'salt-swarm' state.apply swarm.master
 salt 'salt-swarm' cmd.run 'docker node ls'
 ```
 
+После этого - я решил проверить, как будут происходить инсталляции сервисов, для этого - я прописал следующий `/srv/salt/base/swarm/stack.sls`: 
+
+```yaml
+/root/configs:
+  file.directory:
+    - name: /root/configs
+    - user: root
+    - group: root
+    - mode: 700
+
+{% set stack_file = '/root/configs/mystack.yml' %}
+
+mystack_yaml:
+  file.managed:
+    - name: {{ stack_file }}
+    - contents: |
+        version: '3.9'
+
+        services:
+          postgres:
+            image: postgres:15
+            environment:
+              POSTGRES_USER: user
+              POSTGRES_PASSWORD: password
+              POSTGRES_DB: db
+            ports:
+              - "5432:5432"
+            volumes:
+              - pgdata:/var/lib/postgresql/data
+            deploy:
+              replicas: 1
+              restart_policy:
+                condition: on-failure
+
+          redis:
+            image: redis:7
+            ports:
+              - "6379:6379"
+            deploy:
+              replicas: 1
+              restart_policy:
+                condition: on-failure
+
+          nginx:
+            image: nginx:1.25
+            ports:
+              - "8080:80"
+            deploy:
+              replicas: 1
+              restart_policy:
+                condition: on-failure
+
+        volumes:
+          pgdata:
+    - user: root
+    - group: root
+    - mode: 644
+
+deploy_mystack:
+  cmd.run:
+    - name: docker stack deploy -c {{ stack_file }} mystack
+    - unless: docker stack ls | grep -q mystack
+```
+
+На будущее 
