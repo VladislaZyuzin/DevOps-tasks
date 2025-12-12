@@ -545,3 +545,122 @@ root@salt-master:/srv/salt/base# tree
 5 directories, 17 files
 ```
 
+Рассмотрим, как выглядит `/srv/salt/base/k3s/kubemanifests/example-nginx-pod.yaml`:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-example-pod
+  labels:
+    app: nginx
+    component: example
+    managed-by: salt
+spec:
+  containers:
+  - name: nginx-container
+    image: nginx:1.25-alpine
+    imagePullPolicy: IfNotPresent
+    ports:
+    - containerPort: 80
+      protocol: TCP
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "128Mi"
+        cpu: "200m"
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    readinessProbe:
+      httpGet:
+        path: /
+        port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 10
+```
+
+После этого - идём прописывать стейт `/srv/salt/base/k3s/states_for_manifests/example-nginx-pod.sls`:
+
+```yaml
+# Deploy Nginx example pod from manifest file
+{% set manifest_file = '/root/kubemanifests/nginx-example-pod.yaml' %}
+
+# Copy manifest file to minion
+nginx_pod_manifest:
+  file.managed:
+    - name: {{ manifest_file }}
+    - source: salt://k3s/kubemanifests/example-nginx-pod.yaml
+    - makedirs: true
+    - user: root
+    - group: root
+    - mode: 644
+
+# Deploy pod using kubectl
+deploy_nginx_pod:
+  cmd.run:
+    - name: kubectl apply -f {{ manifest_file }}
+    - unless: kubectl get pod nginx-example-pod 2>/dev/null
+    - require:
+      - file: nginx_pod_manifest
+    - env:
+      - KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+# Verify pod is running
+verify_nginx_pod:
+  cmd.run:
+    - name: |
+        echo "Checking nginx-example-pod status..."
+        kubectl get pod nginx-example-pod -o jsonpath='{.status.phase}' | grep -q Running
+    - require:
+      - cmd: deploy_nginx_pod
+```
+
+Так же - прописываем `/srv/salt/base/k3s/states_for_manifests/init.sls`:
+
+```yaml
+# Initialize Kubernetes manifests deployment
+include:
+  - k3s.states_for_manifests.nginx-example-advanced
+  # Добавьте другие манифесты здесь
+  # - k3s.states_for_manifests.another-manifest
+```
+
+и на всякий случай - стейт для удаления пода `/srv/salt/base/k3s/states_for_manifests/nginx-example-remove.sls`: 
+```yaml
+# Remove Nginx example pod
+{% set pod_name = 'nginx-example-pod' %}
+
+remove_nginx_pod:
+  cmd.run:
+    - name: kubectl delete pod {{ pod_name }} --ignore-not-found=true
+    - onlyif: kubectl get pod {{ pod_name }} >/dev/null 2>&1
+    - env:
+      - KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+cleanup_manifest:
+  file.absent:
+    - name: /opt/k8s/manifests/nginx-example-pod.yaml
+```
+
+После - применим конфигурацию: 
+
+```bash
+salt -G 'roles:k3s-check-master' state.apply k3s.states_for_manifests/example-nginx-pod
+```
+
+Если видим, что всё горит зелёным, то ещё проверяем тут: 
+
+```bash
+salt -G 'roles:k3s-check-master' cmd.run 'kubectl get pods -o wide'
+```
+
+<img width="928" height="188" alt="image" src="https://github.com/user-attachments/assets/c9edb613-8f16-43e9-bca5-f38348584226" />
+
+Проверка на деплой проёдена 
+
