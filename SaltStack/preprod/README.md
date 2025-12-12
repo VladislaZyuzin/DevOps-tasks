@@ -32,17 +32,12 @@
 Далее - я настроил salt и salt-ssh (в дальнейщем - он не пригодился :( ) на всех вм. Прописал roster. В папках с конфигами будет всё необходимое. Перейдём же к настройке остальный сервисов
 
 ## Docker-Swarm
-Для настройки сворма было использовано, в целом, всё то же, что и на `wsl`, были немного изменены конфиги и команды вызова. Из хорошей практики - был настроен пиллар. Вот как всё выглядит: 
-
-```bash
-cat /srv/pillar/swarm.sls
+Для настройки сворма было использовано, в целом, всё то же, что и на `wsl`, были немного изменены конфиги и команды вызова. Из хорошей практики - был настроен пиллар. Вот как всё выглядит в `/srv/pillar/swarm.sls`
 
 ```yaml 
 swarm:
-  # IP адрес для advertise-addr
   advertise_addr: 10.70.8.20
 
-  # Дополнительные параметры если нужно
   interface: eth0
   port: 2377
   data_path_addr: 10.70.8.20
@@ -50,4 +45,74 @@ swarm:
   # Настройки для токенов
   token_dir: /etc/docker/swarm
 ```
+
+Таким образом выглядит top.sls в этой же папке, в нему потом ещё вернёмся: 
+
+```yaml
+base:
+  'salt-k8s-worker*':
+    - k3s
+
+  'roles:swarm-master':
+    - match: grain
+    - swarm
+
+  'roles:k3s-check-node':
+    - match: grain
+    - k3s
+```
+
+Далее - обновим пиллары: 
+
+```bash
+salt 'salt-swarm' saltutil.refresh_pillar
+```
+Проверим, что отобразились: 
+
+```bash
+salt -G 'roles:swarm-master' pillar.items
+```
+
+Если вывод примерно такой, то всё ок: 
+
+<img width="895" height="365" alt="image" src="https://github.com/user-attachments/assets/be7278bf-c3bf-4bef-881b-cdcc4f5cae61" />
+
+После - пропишем конфигурации для init.sls и master.sls, так как сворм у нас однонодный, то нода одновременно будет и менеджером и воркером: 
+
+Пример: /srv/salt/base/swarm/init.sls
+
+```yaml
+add_docker_gpg_key:
+  cmd.run:
+    - name: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    - unless: test -f /usr/share/keyrings/docker-archive-keyring.gpg
+
+add_docker_repo:
+  cmd.run:
+    - name: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+    - unless: test -f /etc/apt/sources.list.d/docker.list
+
+update_apt:
+  cmd.run:
+    - name: apt-get update
+
+install_docker:
+  pkg.installed:
+    - pkgs:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+
+docker_service:
+  service.running:
+    - name: docker
+    - enable: True
+
+add_root_to_docker:
+  group.present:
+    - name: docker
+    - addusers:
+      - root
 ```
