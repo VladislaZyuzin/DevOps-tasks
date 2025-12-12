@@ -1,0 +1,56 @@
+salt-swarm:
+  host: 10.70.8.20
+  user: root
+  ssh_config: True
+  priv: /root/.ssh/id_rsa
+  thin_dir: /tmp/salt-ssh-swarm
+  minion_opts:
+    id: salt-swarm
+    grains:
+      roles:
+        - swarm-master
+        - swarm-minion
+      group: swarm
+      team: swarm
+
+salt-k8s-master:
+  host: 10.70.8.30
+  user: root
+  ssh_config: True
+  priv: /root/.ssh/id_rsa
+  thin_dir: /tmp/salt-ssh-k8s-master
+  minion_opts:
+    id: salt-k8s-master
+    grains:
+      roles:
+        - kube-master
+      group: k8s
+      team: k8s
+
+salt-k8s-worker1:
+  host: 10.70.8.31
+  user: root
+  ssh_config: True
+  priv: /root/.ssh/id_rsa
+  thin_dir: /tmp/salt-ssh-k8s-worker1
+  minion_opts:
+    id: salt-k8s-worker1
+    grains:
+      roles:
+        - kube-node
+      group: k8s
+      team: k8s
+
+salt-k8s-worker2:
+  host: 10.70.8.32
+  user: root
+  ssh_config: True
+  priv: /root/.ssh/id_rsa
+  thin_dir: /tmp/salt-ssh-k8s-worker2
+  minion_opts:
+    id: salt-k8s-worker2
+    grains:
+      roles:
+        - kube-node
+      group: k8s
+      team: k8s
